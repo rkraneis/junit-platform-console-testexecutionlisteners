@@ -126,8 +126,16 @@ class TreePrinter {
 		out.print(reportEntry.getTimestamp());
 		Set<Map.Entry<String, String>> entries = reportEntry.getKeyValuePairs().entrySet();
 		if (entries.size() == 1) {
-			printReportEntry(" ", getOnlyElement(entries));
-			return;
+			final Map.Entry<String, String> entry = getOnlyElement(entries);
+			String[] lines = entry.getValue().split("\\R+");
+			if (lines.length == 1) {
+				printReportEntry(" ", entry);
+				return;
+			} else {
+				out.println();
+				printReportEntryLines(indent + theme.blank(), entry.getKey(), lines);
+				return;
+			}
 		}
 		for (Map.Entry<String, String> entry : entries) {
 			out.println();
@@ -140,6 +148,20 @@ class TreePrinter {
 		out.print(color(YELLOW, mapEntry.getKey()));
 		out.print(" = `");
 		out.print(color(GREEN, mapEntry.getValue()));
+		out.print("`");
+	}
+
+	private void printReportEntryLines(String indent, String key, String[] reportLines) {
+		out.print(indent);
+		out.print(color(YELLOW, key));
+		out.print(" = `");
+		for (String line : reportLines) {
+			if(line.length() > 0) {
+				out.println();
+				out.print(indent);
+				out.print(color(GREEN, line));
+			}
+		}
 		out.print("`");
 	}
 
